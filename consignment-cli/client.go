@@ -42,10 +42,8 @@ func main() {
 
 	// Init will parse the command line flags.
 	service.Init()
-	// cmd.Init()
 
 	client := pb.NewShippingService("go.micro.srv.consignment", service.Client())
-	// client := pb.NewShippingService("go.micro.srv.consignment", microclient.DefaultClient)
 
 	// 在命令行中指定新的货物信息 json 文件
 	infoFile := DEFAULT_INFO_FILE
@@ -58,18 +56,18 @@ func main() {
 		log.Fatalf("parse info file error: %v\n", err)
 	}
 
-	resp, err := client.CreateConsignment(context.TODO(), consignment)
+	resp, err := client.CreateConsignment(context.Background(), consignment)
 	if err != nil {
 		log.Fatalf("create consignment error: %v\n", err)
 	}
 	log.Printf("created: %t\n", resp.Created)
 
-	// resp, err = client.GetConsignments(context.Background(), &pb.GetRequest{})
-	// if err != nil {
-	// 	log.Fatalf("failed to list consignments: %v\n", err)
-	// }
+	resp, err = client.GetConsignments(context.Background(), &pb.GetRequest{})
+	if err != nil {
+		log.Fatalf("failed to list consignments: %v\n", err)
+	}
 
-	// for _, c := range resp.Consignments {
-	// 	log.Printf("%+v", c)
-	// }
+	for _, c := range resp.Consignments {
+		log.Printf("%+v", c)
+	}
 }

@@ -10,11 +10,11 @@ import (
 
 	pb "shippy/consignment-service/proto/consignment"
 
-	"google.golang.org/grpc"
+	"github.com/micro/go-micro"
 )
 
 const (
-	ADDRESS           = "localhost:50051"
+	// ADDRESS           = "localhost:50051"
 	DEFAULT_INFO_FILE = "consignment.json"
 )
 
@@ -34,13 +34,16 @@ func parseFile(fileName string) (*pb.Consignment, error) {
 }
 
 func main() {
-	conn, err := grpc.Dial(ADDRESS, grpc.WithInsecure())
-	if err != nil {
-		log.Fatalf("connect error: %v\n", err)
-	}
-	defer conn.Close()
+	// Create a new service. Optionally include some options here.
+	service := micro.NewService(
+		micro.Name("go.micro.srv.consignment"),
+		micro.Version("latest"),
+	)
 
-	client := pb.NewShippingServiceClient(conn)
+	// Init will parse the command line flags.
+	service.Init()
+
+	client := pb.NewShippingService("go.micro.srv.consignment", service.Client())
 
 	// 在命令行中指定新的货物信息 json 文件
 	infoFile := DEFAULT_INFO_FILE

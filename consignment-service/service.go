@@ -5,6 +5,7 @@ import (
 	"log"
 
 	pb "shippy/consignment-service/proto/consignment"
+	vesselPb "shippy/vessel-service/proto/vessel"
 
 	"github.com/micro/go-micro"
 )
@@ -34,9 +35,24 @@ func (repo *Repository) GetAll() []*pb.Consignment {
 // 定义微服务
 type service struct {
 	repo Repository
+	// consignment-service 作为客户端调用 vessel-service 的函数
+	vesselClient vesselPb.VesselService
 }
 
 func (s *service) CreateConsignment(ctx context.Context, req *pb.Consignment, rsp *pb.Response) error {
+	// 检查是否有适合的货轮
+	vReq := &vesselPb.Specification{
+		Capacity:  int32(len(req.Containers)),
+		MaxWeight: req.Weight,
+	}
+	vRsp, err := s.vesselClient.FindAvailable(context.Background(), vReq)
+	if err != nil {
+		return err
+	}
+
+	// 货物被承运
+	log.Printf("found vessel: %s\n", vRsp.Vessel.Name)
+	req.VesselId = vRsp.Vessel.Id
 	consignment, err := s.repo.Create(req)
 	if err != nil {
 		return err
@@ -68,7 +84,9 @@ func main() {
 	// 解析命令行参数
 	server.Init()
 	repo := Repository{}
-	pb.RegisterShippingServiceHandler(server.Server(), &service{repo})
+	// 作为 vessel-service 的客户端
+	vClient := vesselPb.NewVesselService("go.micro.srv.vessel", server.Client())
+	pb.RegisterShippingServiceHandler(server.Server(), &service{repo, vClient})
 
 	if err := server.Run(); err != nil {
 		log.Fatalf("failed to serve: %v", err)

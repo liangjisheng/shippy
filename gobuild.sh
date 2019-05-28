@@ -19,3 +19,5 @@ cd ..
 cd user-service
 go build
 cd ..
+
+docker-compose build

@@ -1,3 +1,7 @@
 #!/bin/bash
 
-docker rm -f $(docker ps -aq)
+CONTAINTERS=$(docker ps -aq)
+if [ "$CONTAINTERS" != "" ]
+then
+    docker rm -f $CONTAINTERS
+fi

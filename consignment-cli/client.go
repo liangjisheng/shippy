@@ -11,6 +11,7 @@ import (
 	pb "shippy/consignment-service/proto/consignment"
 
 	"github.com/micro/go-micro"
+	"github.com/micro/go-micro/metadata"
 )
 
 const (
@@ -46,28 +47,41 @@ func main() {
 	client := pb.NewShippingService("go.micro.srv.consignment", service.Client())
 
 	// 在命令行中指定新的货物信息 json 文件
-	infoFile := DEFAULT_INFO_FILE
-	if len(os.Args) > 1 {
-		infoFile = os.Args[1]
+	if len(os.Args) < 3 {
+		log.Fatalln("Not enough arguments, expecing file and token.")
 	}
+	infoFile := os.Args[1]
+	token := os.Args[2]
+
+	log.Println("infoFile:", infoFile)
+	log.Println("token:", token)
 
 	consignment, err := parseFile(infoFile)
 	if err != nil {
 		log.Fatalf("parse info file error: %v\n", err)
 	}
 
-	resp, err := client.CreateConsignment(context.Background(), consignment)
+	// 创建带有用户 token 的 context
+	// consignment-service 服务端将从中取出 token，解密取出用户身份
+	tokenContext := metadata.NewContext(context.Background(), map[string]string{
+		"token": token,
+	})
+
+	// 调用 RPC
+	// 将货物存储到指定用户的仓库里
+	resp, err := client.CreateConsignment(tokenContext, consignment)
 	if err != nil {
 		log.Fatalf("create consignment error: %v\n", err)
 	}
 	log.Printf("created: %t\n", resp.Created)
 
-	resp, err = client.GetConsignments(context.Background(), &pb.GetRequest{})
+	// 列出目前所有托运的货物
+	resp, err = client.GetConsignments(tokenContext, &pb.GetRequest{})
 	if err != nil {
 		log.Fatalf("failed to list consignments: %v\n", err)
 	}
 
-	for _, c := range resp.Consignments {
-		log.Printf("%+v", c)
+	for i, c := range resp.Consignments {
+		log.Printf("consignment_%d: %v\n", i, c)
 	}
 }

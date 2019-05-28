@@ -7,11 +7,14 @@ import (
 
 	"github.com/micro/cli"
 	"github.com/micro/go-micro"
+	"github.com/micro/go-micro/cmd"
 
 	pb "shippy/user-service/proto/user"
 )
 
 func main() {
+	cmd.Init()
+
 	service := micro.NewService(
 		micro.Name("go.micro.srv.user"),
 		micro.Version("latest"),
@@ -43,6 +46,11 @@ func main() {
 			email := c.String("email")
 			password := c.String("password")
 			company := c.String("company")
+
+			// name = "liangjisheng"
+			// email = "1294851990@qq.com"
+			// password = "liangjisheng"
+			// company = "liangjisheng"
 
 			r, err := client.Create(context.TODO(), &pb.User{
 				Name:     name,

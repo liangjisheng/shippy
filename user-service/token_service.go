@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	pb "shippy/user-service/proto/user"
 	"time"
 
@@ -31,8 +32,12 @@ type TokenService struct {
 // Decode 将 JWT 字符串解密为 CustomClaims 对象
 func (srv *TokenService) Decode(token string) (*CustomClaims, error) {
 	t, err := jwt.ParseWithClaims(token, &CustomClaims{}, func(token *jwt.Token) (interface{}, error) {
+		log.Println("decode token error.")
 		return privateKey, nil
 	})
+	if err != nil || !t.Valid {
+		return nil, err
+	}
 
 	// 解密转换类型并返回
 	if claims, ok := t.Claims.(*CustomClaims); ok && t.Valid {

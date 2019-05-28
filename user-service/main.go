@@ -26,7 +26,9 @@ func main() {
 		micro.Version("latest"),
 	)
 	s.Init()
-	pb.RegisterUserServiceHandler(s.Server(), &handler{repo})
+
+	token := &TokenService{repo}
+	pb.RegisterUserServiceHandler(s.Server(), &handler{repo, token})
 
 	if err := s.Run(); err != nil {
 		log.Fatalf("user service error: %v\n", err)

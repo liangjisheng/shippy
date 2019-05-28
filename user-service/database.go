@@ -22,9 +22,9 @@ func CreateConnection() (*gorm.DB, error) {
 	// dbName = "postgres"
 
 	log.Println("host:", host)
-	log.Println("user:", user)
-	log.Println("password:", password)
-	log.Println("dbName:", dbName)
+	// log.Println("user:", user)
+	// log.Println("password:", password)
+	// log.Println("dbName:", dbName)
 
 	return gorm.Open(
 		"postgres",

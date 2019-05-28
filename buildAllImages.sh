@@ -1,23 +1,21 @@
 #!/bin/bash
 
 cd consignment-cli
-go build
+make build
 cd ..
 
 cd consignment-service
-go build
+make build
 cd ..
 
 cd vessel-service
-go build
+make build
 cd ..
 
 cd user-cli
-go build
+make build
 cd ..
 
 cd user-service
-go build
+make build
 cd ..
-
-docker-compose build

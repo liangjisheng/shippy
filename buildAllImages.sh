@@ -19,3 +19,7 @@ cd ..
 cd user-service
 make build
 cd ..
+
+cd email-service
+make build
+cd ..

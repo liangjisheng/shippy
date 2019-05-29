@@ -24,3 +24,8 @@ if [ -f ./user-service/user-service ]
 then
     rm ./user-service/user-service
 fi
+
+if [ -f ./email-service/email-service ]
+then
+    rm ./email-service/email-service
+fi

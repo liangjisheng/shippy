@@ -12,6 +12,7 @@ import (
 
 const topic = "user.created"
 
+// Subscriber ...
 type Subscriber struct{}
 
 func main() {

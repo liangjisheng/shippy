@@ -5,6 +5,7 @@ cd $GOPATH/src/shippy/
 # 如果想实时查看日志，可以使下面的每个 docker run 在一个终端运行,且去掉-d选项
 docker run -d -p 5432:5432 postgres
 docker run -d -p 27017:27017 mongo
+docker run -d -p 4222:4222 nats
 
 docker run -d --net="host" -e MICRO_REGISTRY=mdns user-service
 

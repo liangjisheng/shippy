@@ -6,12 +6,18 @@ import (
 	"log"
 	pb "shippy/user-service/proto/user"
 
+	"github.com/micro/go-micro"
+	_ "github.com/micro/go-plugins/broker/nats"
 	"golang.org/x/crypto/bcrypt"
 )
+
+const topic = "user.created"
 
 type handler struct {
 	repo         Repository
 	tokenService Authable
+	Publisher    micro.Publisher
+	// PubSub broker.Broker
 }
 
 // Create ...
@@ -27,8 +33,38 @@ func (h *handler) Create(ctx context.Context, req *pb.User, rsp *pb.Response) er
 		return err
 	}
 	rsp.User = req
+
+	// 发布带有用户所有信息的消息
+	// if err := h.publishEvent(req); err != nil {
+	// 	return err
+	// }
+
+	if err := h.Publisher.Publish(ctx, req); err != nil {
+		return err
+	}
 	return nil
 }
+
+// publishEvent 发送消息通知
+// func (h *handler) publishEvent(user *pb.User) error {
+// 	body, err := json.Marshal(user)
+// 	if err != nil {
+// 		return err
+// 	}
+
+// 	msg := &broker.Message{
+// 		Header: map[string]string{
+// 			"id": user.Id,
+// 		},
+// 		Body: body,
+// 	}
+
+// 	// 发布 user.created topic 消息
+// 	if err := h.PubSub.Publish(topic, msg); err != nil {
+// 		log.Fatalf("[pub] failed: %v\n", err)
+// 	}
+// 	return nil
+// }
 
 // Get ...
 func (h *handler) Get(ctx context.Context, req *pb.User, rsp *pb.Response) error {

@@ -3,4 +3,7 @@ build:
 	docker build -t consignment-cli .
 	rm consignment-cli
 run:
-	docker run -e MICRO_REGISTRY=mdns consignment-cli
+	docker run --net="host" \
+		-e MICRO_REGISTRY=mdns \
+		consignment-cli consignment.json \
+		eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VyIjp7ImlkIjoiMjU0M2JmMjItZDBjOS00Y2I3LTllZjktZDdjZjU2MDQ4N2I3IiwibmFtZSI6ImxpYW5namlzaGVuZyIsImNvbXBhbnkiOiJsaWFuZ2ppc2hlbmciLCJlbWFpbCI6IjEyOTQ4NTE5OTBAcXEuY29tIiwicGFzc3dvcmQiOiIkMmEkMTAkMS9lckU2a0pwOHFYTThHWHdVZmx5dUM4eHVpOGguSjRRaUtwRWE1ZUdsRVE5SVVZRDVzdTIifSwiZXhwIjoxNTU5MjkwOTg1LCJpc3MiOiJnby5taWNyby5zcnYudXNlciJ9.y4ar2ZG8wePZ_rcuT_ejAzOZvMQqzCV1oDhTaQdWTMk
